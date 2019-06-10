@@ -62,6 +62,21 @@ struct band_t {
 };
 TYPEDEF_xref2band_t; //!< \internal
 
+#elif defined(CFG_eu433) // EU433 spectrum =================================================
+enum { MAX_CHANNELS = 16 };      //!< Max supported channels
+enum { MAX_BANDS    =  4 };
+
+enum { LIMIT_CHANNELS = (1<<4) };   // EU868 will never have more channels
+//! \internal
+struct band_t {
+    u2_t     txcap;     // duty cycle limitation: 1/txcap
+    s1_t     txpow;     // maximum TX power
+    u1_t     lastchnl;  // last used channel
+    ostime_t avail;     // channel is blocked until this time
+};
+TYPEDEF_xref2band_t; //!< \internal
+
+
 #elif defined(CFG_us915)  // US915 spectrum =================================================
 
 enum { MAX_XCHANNELS = 2 };      // extra channels in RAM, channels 0-71 are immutable
@@ -172,6 +187,11 @@ struct lmic_t {
     u4_t        channelFreq[MAX_CHANNELS];
     u2_t        channelDrMap[MAX_CHANNELS];
     u2_t        channelMap;
+#elif defined(CFG_eu433)
+    band_t      bands[MAX_BANDS];
+    u4_t        channelFreq[MAX_CHANNELS];
+    u2_t        channelDrMap[MAX_CHANNELS];
+    u2_t        channelMap;
 #elif defined(CFG_us915)
     u4_t        xchFreq[MAX_XCHANNELS];    // extra channel frequencies (if device is behind a repeater)
     u2_t        xchDrMap[MAX_XCHANNELS];   // extra channel datarate ranges  ---XXX: ditto
@@ -215,7 +235,7 @@ struct lmic_t {
     u1_t        adrChanged;
 
     u1_t        rxDelay;      // Rx delay after TX
-    
+
     u1_t        margin;
     bit_t       ladrAns;      // link adr adapt answer pending
     bit_t       devsAns;      // device status answer pending
@@ -267,6 +287,9 @@ DECLARE_LMIC; //!< \internal
 //! Construct a bit map of allowed datarates from drlo to drhi (both included).
 #define DR_RANGE_MAP(drlo,drhi) (((u2_t)0xFFFF<<(drlo)) & ((u2_t)0xFFFF>>(15-(drhi))))
 #if defined(CFG_eu868)
+enum { BAND_MILLI=0, BAND_CENTI=1, BAND_DECI=2, BAND_AUX=3 };
+bit_t LMIC_setupBand (u1_t bandidx, s1_t txpow, u2_t txcap);
+#elif defined(CFG_eu433)
 enum { BAND_MILLI=0, BAND_CENTI=1, BAND_DECI=2, BAND_AUX=3 };
 bit_t LMIC_setupBand (u1_t bandidx, s1_t txpow, u2_t txcap);
 #endif

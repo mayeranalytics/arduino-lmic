@@ -33,6 +33,7 @@ TYPEDEF_xref2rps_t;
 
 enum { ILLEGAL_RPS = 0xFF };
 enum { DR_PAGE_EU868 = 0x00 };
+enum { DR_PAGE_EU433 = 0x00 };
 enum { DR_PAGE_US915 = 0x10 };
 
 // Global maximum frame length
@@ -91,6 +92,54 @@ enum { FREQ_DNW2         = EU868_F6 };
 enum { DR_DNW2           = DR_SF12 };
 enum { CHNL_BCN          = 5 };
 enum { FREQ_BCN          = EU868_F6 };
+enum { DR_BCN            = DR_SF9 };
+enum { AIRTIME_BCN       = 144384 };  // micros
+
+enum {
+    // Beacon frame format EU SF9
+    OFF_BCN_NETID    = 0,
+    OFF_BCN_TIME     = 3,
+    OFF_BCN_CRC1     = 7,
+    OFF_BCN_INFO     = 8,
+    OFF_BCN_LAT      = 9,
+    OFF_BCN_LON      = 12,
+    OFF_BCN_CRC2     = 15,
+    LEN_BCN          = 17
+};
+#elif defined(CFG_eu433) // ==============================================
+
+enum _dr_eu433_t { DR_SF12=0, DR_SF11, DR_SF10, DR_SF9, DR_SF8, DR_SF7, DR_SF7B, DR_FSK, DR_NONE };
+enum { DR_DFLTMIN = DR_SF7 };
+enum { DR_PAGE = DR_PAGE_EU433 };
+
+// Default frequency plan for EU 433MHz ISM band
+// Bands:
+//  g1 :   1%  14dBm
+//  g2 : 0.1%  14dBm
+//  g3 :  10%  27dBm
+//                 freq             band     datarates
+enum { EU433_F1 = 433175000,      // g1   SF7-12
+       EU433_F2 = 433375000,      // g1   SF7-12 FSK SF7/250
+       EU433_F3 = 433575000,      // g1   SF7-12
+       EU433_F4 = 433775000,      // g2   SF7-12
+       EU433_F5 = 433975000,      // g2   SF7-12
+       EU433_F6 = 434175000,      // g3   SF7-12
+       EU433_J4 = 434375000,      // g2   SF7-12  used during join
+       EU433_J5 = 434575000,      // g2   SF7-12   ditto
+       EU433_J6 = 434775000,      // g2   SF7-12   ditto
+
+};
+enum { EU433_FREQ_MIN = 433050000,
+       EU433_FREQ_MAX = 434900000 };
+
+enum { CHNL_PING         = 5 };
+enum { FREQ_PING         = EU433_F6 };  // default ping freq
+enum { DR_PING           = DR_SF9 };       // default ping DR
+enum { CHNL_DNW2         = 5 };
+enum { FREQ_DNW2         = EU433_F6 };
+enum { DR_DNW2           = DR_SF12 };
+enum { CHNL_BCN          = 5 };
+enum { FREQ_BCN          = EU433_F6 };
 enum { DR_BCN            = DR_SF9 };
 enum { AIRTIME_BCN       = 144384 };  // micros
 
@@ -296,6 +345,22 @@ enum {
     MCMD_LADR_DR_SHIFT   = 4,
     MCMD_LADR_POW_SHIFT  = 0,
 #if defined(CFG_eu868)
+    MCMD_LADR_SF12      = DR_SF12<<4,
+    MCMD_LADR_SF11      = DR_SF11<<4,
+    MCMD_LADR_SF10      = DR_SF10<<4,
+    MCMD_LADR_SF9       = DR_SF9 <<4,
+    MCMD_LADR_SF8       = DR_SF8 <<4,
+    MCMD_LADR_SF7       = DR_SF7 <<4,
+    MCMD_LADR_SF7B      = DR_SF7B<<4,
+    MCMD_LADR_FSK       = DR_FSK <<4,
+
+    MCMD_LADR_20dBm     = 0,
+    MCMD_LADR_14dBm     = 1,
+    MCMD_LADR_11dBm     = 2,
+    MCMD_LADR_8dBm      = 3,
+    MCMD_LADR_5dBm      = 4,
+    MCMD_LADR_2dBm      = 5,
+#elif defined(CFG_eu433)
     MCMD_LADR_SF12      = DR_SF12<<4,
     MCMD_LADR_SF11      = DR_SF11<<4,
     MCMD_LADR_SF10      = DR_SF10<<4,
