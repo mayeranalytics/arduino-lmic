@@ -1250,6 +1250,8 @@ static int decodeBeacon (void) {
     if(
 #if CFG_eu868
         d[OFF_BCN_CRC1] != (u1_t)os_crc16(d,OFF_BCN_CRC1)
+#elif CFG_eu433
+        d[OFF_BCN_CRC1] != (u1_t)os_crc16(d,OFF_BCN_CRC1)
 #elif CFG_us915
         os_rlsbf2(&d[OFF_BCN_CRC1]) != os_crc16(d,OFF_BCN_CRC1)
 #endif
